@@ -1,0 +1,30 @@
+.dropdown-list {
+  padding: 5px;
+  list-style: none;
+  max-height: 200px;
+  overflow: scroll;
+  width: 120px;
+  position: absolute;
+  top: 30px;
+  background-color: rgb(239 244 249);
+  z-index: 99;
+  .empty {
+    color: gray;
+    text-align: center;
+    font-size: 14px;
+  }
+  .selected {
+    background: #1a7ee3;
+    color: white;
+  }
+  li {
+    cursor: pointer;
+    padding: 5px;
+    background-color: rgb(239 244 249);
+    color: black;
+    &:hover {
+      background: #dbdbdb;
+      color: white;
+    }
+  }
+}

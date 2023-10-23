@@ -1,0 +1,82 @@
+#root .container,
+#root {
+  .ant-btn {
+    border-width: 0;
+    &hover {
+      border-width: 0;
+    }
+  }
+  .btn,
+  .primary-btn,
+  .danger-btn {
+    display: flex;
+    min-height: 36px;
+    border-radius: 4px;
+    justify-content: center;
+    align-items: center;
+    flex-direction: row;
+    overflow: hidden;
+    cursor: pointer;
+    align-self: stretch;
+    padding-left: 12px;
+    padding-right: 12px;
+    height: 40px;
+    background-color: @default-color;
+    &:hover {
+      background-color: @default-hover-color;
+    }
+    span {
+      font-size: 14px;
+      color: @default-text-color;
+      line-height: normal;
+      font-family: Inter-Bold;
+      text-align: center;
+      user-select: none;
+      flex-shrink: 1;
+      flex-grow: 0;
+      z-index: 2;
+      padding-left: @space-xxs;
+      padding-right: @space-xxs;
+    }
+  }
+  .danger-btn {
+    background-color: @red-color;
+    &:hover {
+      background-color: @red-dark-color;
+    }
+    span {
+      color: @white-color;
+    }
+  }
+  .primary-btn {
+    background-color: @primary-color;
+    &:hover {
+      background-color: @primary-hover-color;
+    }
+    span {
+      color: @primary-text-color;
+    }
+  }
+  .ant-btn-background-ghost {
+    background-color: transparent;
+    border-width: 1px;
+    &:hover {
+      background-color: transparent;
+    }
+    span {
+      color: inherit !important;
+    }
+  }
+  .primary-btn[disabled] {
+    background-color: @primary-color;
+    &:hover {
+      background-color: @primary-color;
+    }
+  }
+  .btn[disabled],
+  .primary-btn[disabled],
+  .danger-btn[disabled] {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+}
