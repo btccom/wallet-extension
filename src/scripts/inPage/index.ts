@@ -28,14 +28,16 @@ export class RequestPort {
    * keep app alive
    */
   private keepAlive = () => {
-    this.services.request({
-      method: 'keepAlive',
-      params: {}
-    }).then((v) => {
-      setTimeout(() => {
-        this.keepAlive();
-      }, 1000);
-    });
+    this.services
+      .request({
+        method: 'keepAlive',
+        params: {}
+      })
+      .then((v) => {
+        setTimeout(() => {
+          this.keepAlive();
+        }, 1000);
+      });
   };
   // public methods
   requestAccounts = async () => {
@@ -47,6 +49,14 @@ export class RequestPort {
   getAccounts = async () => {
     return this.services.request({
       method: 'getAccounts'
+    });
+  };
+  signTransaction = async ({ psbt }: { psbt: string }) => {
+    return this.services.request({
+      method: 'signTransaction',
+      params: {
+        psbt
+      }
     });
   };
   deposit = async ({
@@ -87,7 +97,7 @@ export class RequestPort {
     this.services.on('accountsChanged', (data) => {
       callback && callback(data);
     });
-  }
+  };
 }
 
 export class BtccomWalletService extends EventEmitter {
@@ -114,7 +124,6 @@ export class BtccomWalletService extends EventEmitter {
         params: { icon, name, origin }
       });
     });
-
   };
 
   private _requestPromiseCheckVisibility = () => {

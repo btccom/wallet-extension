@@ -44,6 +44,7 @@ export async function createSendBTC({
       psbt.addInput({
         hash: v.hash,
         index: v.index,
+        sequence: v.sequence,
         witnessUtxo: {
           value: Number(inputs[input_keys]),
           script: Buffer.from(scriptPubKey, 'hex')

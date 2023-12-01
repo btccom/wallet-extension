@@ -21,6 +21,8 @@ import {
 } from '@/common/types';
 
 export interface WalletController {
+  getTransactionByPsbt(psbt: string): unknown;
+  signPsbt(psbt: any): unknown;
   sendSpsat(arg0: { to: string; name: string; feeRate: number }): SpsatTransaction;
   sendBrc20(arg0: { to: string; inscriptionIds: string[]; feeRate: number; tick: string }): Brc20Transaction;
   pushInscribeTransferTx(oid: string, rawtx: string): InscribeTransferPushTxResult;

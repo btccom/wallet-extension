@@ -51,6 +51,7 @@
 @select-color: #f2f2f2;
 
 @font-xxxl: 32px;
+@font-xxsl: 30px;
 @font-xxl: 24px;
 @font-xl: 20px;
 @font-lg: 18px;
@@ -78,6 +79,9 @@
 
 .font(@size) when (@size = 'xxxl') {
   font-size: @font-xxxl;
+}
+.font(@size) when (@size = 'xxsl') {
+  font-size: @font-xxsl;
 }
 .font(@size) when (@size = 'xxl') {
   font-size: @font-xxl;

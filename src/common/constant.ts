@@ -88,8 +88,8 @@ export const BRC20_EXPLORER_URL = 'https://ordi.btc.com';
 export const PERMISSION_ORIGIN = '';
 
 export const OPENAPI_URL_MAINNET = 'https://wallet.api.btc.com';
-export const OPENAPI_URL_TESTNET = '';
-export const OPENAPI_URL_TEST_TRANSACT = '';
+export const OPENAPI_URL_TESTNET = 'http://10.10.10.3:8081';
+export const OPENAPI_URL_TEST_TRANSACT = 'http://10.10.10.3:12347';
 export const VERSION = process.env.release!;
 export const MANIFEST_VERSION = process.env.manifest!;
 

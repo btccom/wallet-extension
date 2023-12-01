@@ -17,16 +17,73 @@ class TransactionController {
     return walletKeyManager.signTransaction(keyring, psbt, inputs);
   };
 
-  signPsbt = async (psbt: bitcoin.Psbt, options?: any) => {
+  getTransactionByPsbt  = async (psbtHex: string) => {
+    const networkType = walletController.getNetworkType();
+    const psbtNetwork = getPsbtNetworkType(networkType);
+    const account = await walletController.getCurrentAccount();
+    if (!account) throw new Error('no current account');
+    const keyring = await walletController.getCurrentKeyring();
+    if (!keyring) throw new Error('no current keyring');
+    const psbtObj = bitcoin.Psbt.fromHex(psbtHex, {network: psbtNetwork});
+    const transactionData: any = {
+      inputs: [],
+      outputs: [],
+      totalInputValue: 0,
+      totalOutputValue: 0,
+      networkFee: 0,
+      hex: ''
+    }
+    psbtObj.data.inputs.forEach((v, index) => {
+      let script: any = null;
+      let value = 0;
+      if (v.witnessUtxo) {
+        script = v.witnessUtxo.script;
+        value = v.witnessUtxo.value;
+      } else if (v.nonWitnessUtxo) {
+        const tx = bitcoin.Transaction.fromBuffer(v.nonWitnessUtxo);
+        const output = tx.outs[psbtObj.txInputs[index].index];
+        script = output.script;
+        value = output.value;
+      }
+      let address = '';
+      try {
+        address = PsbtAddress.fromOutputScript(script, psbtNetwork);
+      } catch (e: any) {
+        console.log(e.message, 'error');
+        throw new Error(e.message);
+      }
+      transactionData.inputs.push({
+        address,
+        value,
+        toSign: address === account.address
+      });
+      transactionData.totalInputValue+=value;
+    });
+    psbtObj.txOutputs.forEach((v, index) => {
+      transactionData.outputs.push({
+        address: PsbtAddress.fromOutputScript(v.script, psbtNetwork),
+        value: v.value
+      });
+      transactionData.totalOutputValue+=v.value;
+    });
+
+    transactionData.networkFee = transactionData.totalInputValue - transactionData.totalOutputValue;
+    transactionData.hex = psbtObj.data.getTransaction().toString('hex');
+    return transactionData;
+  }
+  signPsbt = async (psbt: any, options?: any) => {
+
+    const networkType = walletController.getNetworkType();
+    const psbtNetwork = getPsbtNetworkType(networkType);
+    if (typeof psbt === 'string') {
+      psbt = bitcoin.Psbt.fromHex(psbt, {network: psbtNetwork});
+    }
     const account = await walletController.getCurrentAccount();
     if (!account) throw new Error('no current account');
 
     const keyring = await walletController.getCurrentKeyring();
     if (!keyring) throw new Error('no current keyring');
     const _keyring = walletKeyManager.keyrings[keyring.index];
-
-    const networkType = walletController.getNetworkType();
-    const psbtNetwork = getPsbtNetworkType(networkType);
 
     const toSignInputs: ToSignInput[] = [];
     psbt.data.inputs.forEach((v, index) => {
@@ -41,7 +98,7 @@ class TransactionController {
         script = output.script;
         value = output.value;
       }
-      const isSigned = false; //v.finalScriptSig || v.finalScriptWitness;
+      const isSigned = v.finalScriptSig || v.finalScriptWitness;
       if (script && !isSigned) {
         let address = account.address;
         try {

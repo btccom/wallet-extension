@@ -4,7 +4,7 @@ import { useChangeNetworkTypeCallback, useNetworkType } from '@/ui/store/ui/hook
 
 export default function NetworkTypePage() {
   const networkType = useNetworkType();
-  // const changeNetworkType = useChangeNetworkTypeCallback();
+  const changeNetworkType = useChangeNetworkTypeCallback();
   return (
     <div className="container">
       <Header
@@ -21,8 +21,8 @@ export default function NetworkTypePage() {
                 className="card "
                 key={index}
                 onClick={async () => {
-                  // await changeNetworkType(item.value);
-                  // window.location.reload();
+                  await changeNetworkType(item.value);
+                  window.location.reload();
                 }}>
                 <div className="flex-row full justify-between items-center">
                   <div className="flex-row items-center">

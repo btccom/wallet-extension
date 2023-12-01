@@ -27,8 +27,7 @@ const SettingList: Setting[] = [
     value: '',
     desc: '',
     action: 'networkType',
-    // route: '/settings/network-type',
-    route: '',
+    route: process.env.NODE_ENV === 'development' ? '/settings/network-type' : '',
     right: false
   },
   {

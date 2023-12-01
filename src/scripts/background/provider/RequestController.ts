@@ -77,6 +77,21 @@ class RequestController {
       const txid = await transaction.pushTx(rawTx);
       return txid;
     }
+
+    @Reflect.metadata('NOTICE', ['SignTransaction', (req) => {
+      const { data: { params: { toAddress, satoshis } } } = req;
+    }])
+      signTransaction = async ({noticeRes}) => {
+        try{
+          const psbt = await transaction.signPsbt(noticeRes?.psbt || '');
+          const rawtx = psbt.extractTransaction().toHex();
+          const txid = await transaction.pushTx(rawtx);
+          return txid;
+        }catch(err: any){
+          console.log(err);
+          return '';
+        }
+      }
 }
 
 export default new RequestController();
