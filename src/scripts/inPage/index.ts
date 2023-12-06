@@ -63,12 +63,14 @@ export class RequestPort {
     toAddress,
     amount,
     type,
-    tick
+    tick,
+    isRbf
   }: {
     toAddress: string;
     amount: number;
     type: 'btc' | 'brc20';
     tick?: string;
+    isRbf?: boolean;
   }) => {
     return this.services.request({
       method: 'deposit',
@@ -76,7 +78,8 @@ export class RequestPort {
         toAddress,
         amount,
         type,
-        tick
+        tick,
+        isRbf
       }
     });
   };

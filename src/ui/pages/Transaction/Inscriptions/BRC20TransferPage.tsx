@@ -1,4 +1,4 @@
-import { Button } from 'antd';
+import { Button, Checkbox } from 'antd';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 
@@ -264,6 +264,7 @@ function Step2({
   const createBrc20Tx = useCreateMultiBrc20TxCallback();
 
   const [disabled, setDisabled] = useState(true);
+  const [isRbf, setIsRbf] = useState(true);
 
   useEffect(() => {
     setDisabled(true);
@@ -286,7 +287,8 @@ function Step2({
         { address: contextData.receiver },
         inscriptionIds,
         contextData.tick,
-        contextData.feeRate
+        contextData.feeRate,
+        isRbf
       );
       rawTxInfo.selectBrc20 = Object.values(contextData.inscriptions);
       // updateContextData({ tabKey: TabKey.STEP3, rawTxInfo: rawTxInfo });
@@ -322,7 +324,14 @@ function Step2({
           />
         </div>
         <div className="flex-col">
-          <div className="text textDim">Fee</div>
+          <div className="flex-row justify-between">
+            <div className="text textDim">Fee</div>
+            <div>
+              <Checkbox checked={isRbf} onChange={(e) => setIsRbf(e.target.checked)}>
+                RBF
+              </Checkbox>
+            </div>
+          </div>
           <FeeRateBar
             onChange={(val) => {
               updateContextData({ feeRate: val });

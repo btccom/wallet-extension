@@ -14,9 +14,22 @@ iframe {
 .ant-checkbox-inner {
   width: 15px !important;
   height: 15px !important;
+  border: 1px solid #575b63 !important;
+  transition: none !important;
+}
+.ant-checkbox-checked .ant-checkbox-inner {
+  width: 15px !important;
+  height: 15px !important;
   background-color: rgba(0, 0, 0, 0) !important;
-  border-width: 1px !important;
+  border: 0px !important;
   border-color: rgba(255, 255, 255, 0.5) !important;
+  transition: none !important;
+}
+.ant-checkbox-checked::after {
+  animation: none !important;
+}
+.ant-checkbox-checked .ant-checkbox-inner::after {
+  transition: none !important;
 }
 
 .ant-checkbox {

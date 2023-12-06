@@ -131,14 +131,16 @@ export class ApiManager {
     to: string,
     amount: number,
     feerate: number,
-    autoAdjust: boolean
+    autoAdjust: boolean,
+    isRbf: boolean
   ): Promise<BtcTransaction> {
     const data = await this.httpPostTransactOpenApi('/wallet/send_btc', {
       addr,
       to,
       amount,
       feerate,
-      max: autoAdjust ? 1 : 0
+      max: autoAdjust ? 1 : 0,
+      rbf: isRbf ? 1 : 0
     });
     if (data.code != API_STATUS.SUCCESSZERO) {
       throw new Error(data.message);
@@ -171,33 +173,35 @@ export class ApiManager {
     }
     return data.data;
   }
-  async sendInscription(addr: string, to: string, ids: string[], feerate: number): Promise<InscriptionTransaction> {
+  async sendInscription(addr: string, to: string, ids: string[], feerate: number, isRbf: boolean): Promise<InscriptionTransaction> {
     const data = await this.httpPostTransactOpenApi('/wallet/send_inscription', {
       addr,
       to,
       id: ids.join(','),
-      feerate
+      feerate,
+      rbf: isRbf ? 1 : 0
     });
     if (data.code != API_STATUS.SUCCESSZERO) {
       throw new Error(data.message);
     }
     return data.data;
   }
-  async sendBrc20(addr: string, to: string, tick: string, ids: string[], feerate: number): Promise<Brc20Transaction> {
+  async sendBrc20(addr: string, to: string, tick: string, ids: string[], feerate: number, isRbf: boolean): Promise<Brc20Transaction> {
     const data = await this.httpPostTransactOpenApi('/wallet/send_brc20', {
       addr,
       to,
       tick,
       utxos: ids.join(','),
-      feerate
+      feerate,
+      rbf: isRbf ? 1 : 0
     });
     if (data.code != API_STATUS.SUCCESSZERO) {
       throw new Error(data.message);
     }
     return data.data;
   }
-  async send_spsat(addr: string, to: string, name: string, feerate: string): Promise<SpsatTransaction> {
-    const data = await this.httpPostTransactOpenApi('/wallet/send_spsat', { addr, to, name, feerate });
+  async send_spsat(addr: string, to: string, name: string, feerate: string, isRbf: boolean): Promise<SpsatTransaction> {
+    const data = await this.httpPostTransactOpenApi('/wallet/send_spsat', { addr, to, name, feerate, rbf: isRbf ? 1 : 0 });
     if (data.code != API_STATUS.SUCCESSZERO) {
       throw new Error(data.message);
     }
@@ -207,13 +211,15 @@ export class ApiManager {
     addr: string,
     tick: string,
     feerate: number,
-    brc20_amount: number | string
+    brc20_amount: number | string,
+    isRbf: boolean
   ): Promise<InscriptionTransaction> {
     const data = await this.httpPostTransactOpenApi('/wallet/inscribe_transfer', {
       addr,
       tick,
       feerate,
-      brc20_amount
+      brc20_amount,
+      rbf: isRbf ? 1 : 0
     });
     if (data.code != API_STATUS.SUCCESSZERO) {
       throw new Error(data.message);
@@ -221,10 +227,11 @@ export class ApiManager {
     return data.data;
   }
 
-  async sendInscribeTransferRawtx(oid: string, rtx: string): Promise<InscribeTransferPushTxResult> {
+  async sendInscribeTransferRawtx(oid: string, rtx: string, isRbf: boolean): Promise<InscribeTransferPushTxResult> {
     const data = await this.httpPostTransactOpenApi('/wallet/send_inscribe_transfer_rawtx', {
       oid,
-      rtx
+      rtx,
+      rbf: isRbf ? 1 : 0
     });
     if (data.code != API_STATUS.SUCCESSZERO) {
       throw new Error(data.message);
@@ -251,19 +258,21 @@ export class ApiManager {
     to: string,
     tick: string,
     brc20_amount: number | string,
-    feerate: string
+    feerate: string,
+    isRbf: boolean
   ): Promise<SendBrc20TransactionResult> {
     const data = await this.httpPostTransactOpenApi('/wallet/transfer_and_send', {
       addr,
       to,
       tick,
       brc20_amount,
-      feerate
+      feerate,
+      rbf: isRbf ? 1 : 0
     });
     return data;
   }
-  async transfer(addr: string, id: string, rtx: string): Promise<SpsatTransaction> {
-    const data = await this.httpPostTransactOpenApi('/wallet/transfer', { addr, id, rtx });
+  async transfer(addr: string, id: string, rtx: string, isRbf: boolean): Promise<SpsatTransaction> {
+    const data = await this.httpPostTransactOpenApi('/wallet/transfer', { addr, id, rtx, rbf: isRbf ? 1 : 0 });
     if (data.code != API_STATUS.SUCCESSZERO) {
       throw new Error(data.message);
     }

@@ -135,7 +135,8 @@ class TransactionController {
     utxos,
     receiverToPayFee,
     feeRate,
-    autoAdjust
+    autoAdjust,
+    isRbf
   }: {
     to: string;
     amount: number;
@@ -143,60 +144,65 @@ class TransactionController {
     receiverToPayFee: boolean;
     feeRate: number | number;
     autoAdjust: boolean;
+    isRbf: boolean;
   }) => {
     const account = commonManager.getCurrentAccount();
     if (!account) throw new Error('no current account');
 
-    const btcTransactionInfo = await apiManager.sendBTC(account.address, to, amount, feeRate, autoAdjust);
+    const btcTransactionInfo = await apiManager.sendBTC(account.address, to, amount, feeRate, autoAdjust, isRbf);
 
     return btcTransactionInfo;
   };
 
-  sendInscription = async ({ to, inscriptionId, feeRate }: { to: string; inscriptionId: string; feeRate: number }) => {
+  sendInscription = async ({ to, inscriptionId, feeRate, isRbf }: { to: string; inscriptionId: string; feeRate: number;isRbf:boolean }) => {
     const account = await commonManager.getCurrentAccount();
     if (!account) throw new Error('no current account');
-    const btcTransactionInfo = await apiManager.sendInscription(account.address, to, [inscriptionId], feeRate);
+    const btcTransactionInfo = await apiManager.sendInscription(account.address, to, [inscriptionId], feeRate, isRbf);
     return btcTransactionInfo;
   };
 
   sendInscriptions = async ({
     to,
     inscriptionIds,
-    feeRate
+    feeRate,
+    isRbf
   }: {
     to: string;
     inscriptionIds: string[];
     feeRate: number;
+    isRbf: boolean;
   }) => {
     const account = await commonManager.getCurrentAccount();
     if (!account) throw new Error('no current account');
 
-    const btcTransactionInfo = await apiManager.sendInscription(account.address, to, inscriptionIds, feeRate);
+    const btcTransactionInfo = await apiManager.sendInscription(account.address, to, inscriptionIds, feeRate, isRbf);
     return btcTransactionInfo;
   };
   sendBrc20 = async ({
     to,
     inscriptionIds,
     feeRate,
-    tick
+    tick,
+    isRbf
   }: {
     to: string;
     inscriptionIds: string[];
     feeRate: number;
     tick: string;
+    isRbf: boolean;
   }) => {
     const account = await commonManager.getCurrentAccount();
     if (!account) throw new Error('no current account');
 
-    const btcTransactionInfo = await apiManager.sendBrc20(account.address, to, tick, inscriptionIds, feeRate);
+    const btcTransactionInfo = await apiManager.sendBrc20(account.address, to, tick, inscriptionIds, feeRate, isRbf);
     return btcTransactionInfo;
   };
 
-  sendSpsat = async ({ to, name, feeRate }: { to: string; name: string; feeRate: string }) => {
+  sendSpsat = async ({ to, name, feeRate, isRbf }: { to: string; name: string; feeRate: string, isRbf: boolean }) => {
     const account = await commonManager.getCurrentAccount();
     if (!account) throw new Error('no current account');
 
-    const btcTransactionInfo = await apiManager.send_spsat(account.address, to, name, feeRate);
+    const btcTransactionInfo = await apiManager.send_spsat(account.address, to, name, feeRate, isRbf);
     return btcTransactionInfo;
   };
 
@@ -227,9 +233,9 @@ class TransactionController {
     });
     return rawtx;
   };
-  pushInscribeTransferTx = async (oid: string, rawtx: string) => {
+  pushInscribeTransferTx = async (oid: string, rawtx: string, isRbf: boolean) => {
     try {
-      const result = await apiManager.sendInscribeTransferRawtx(oid, rawtx);
+      const result = await apiManager.sendInscribeTransferRawtx(oid, rawtx, isRbf);
       return result;
     } catch (e: any) {
       throw new Error(e.message);

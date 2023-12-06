@@ -500,8 +500,8 @@ export class WalletController {
     return result;
   };
 
-  inscribeBRC20Transfer = (address: string, tick: string, amount: string, feeRate: number) => {
-    return apiManager.inscribeBRC20Transfer(address, tick, feeRate, amount);
+  inscribeBRC20Transfer = (address: string, tick: string, amount: string, feeRate: number, isRbf: boolean) => {
+    return apiManager.inscribeBRC20Transfer(address, tick, feeRate, amount, isRbf);
   };
 
   getHiddenMoney = () => {
@@ -528,11 +528,11 @@ export class WalletController {
   getTickInfo = async (ticker: string) => {
     return await apiManager.getTickInfo(ticker);
   };
-  transferAndSend = async (addr, to, tick, brc20_amount, feerate) => {
-    return await apiManager.transferAndSend(addr, to, tick, brc20_amount, feerate);
+  transferAndSend = async (addr, to, tick, brc20_amount, feerate, isRbf) => {
+    return await apiManager.transferAndSend(addr, to, tick, brc20_amount, feerate, isRbf);
   };
-  transfer = (addr: string, id: string, rtx: string) => {
-    return apiManager.transfer(addr, id, rtx);
+  transfer = (addr: string, id: string, rtx: string, isRbf: boolean) => {
+    return apiManager.transfer(addr, id, rtx, isRbf);
   };
   getVersionInfo = async () => {
     let versionInfo = commonManager.getVersionInfo();

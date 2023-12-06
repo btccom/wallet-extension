@@ -1,4 +1,4 @@
-import { Button } from 'antd';
+import { Button, Checkbox } from 'antd';
 import { useEffect, useMemo, useState } from 'react';
 
 import { SEND_LIMIT } from '@/common/constant';
@@ -10,6 +10,7 @@ import { useNavigate } from '@/ui/router';
 import { useBitcoinTx, useCreateBitcoinTxCallback } from '@/ui/store/transactions/hooks';
 import { useAccountBalance } from '@/ui/store/ui/hooks';
 import { isValidAddress } from '@/ui/utils';
+import Icon, { CheckCircleFilled } from '@ant-design/icons';
 
 import SignHex from '../SignHex';
 
@@ -19,6 +20,7 @@ function TxCreatePage({ localState, updateState }) {
   const bitcoinTx = useBitcoinTx();
   const [inputAmount, setInputAmount] = useState(localState.amount);
   const [disabled, setDisabled] = useState(true);
+  const [isRbf, setIsRbf] = useState(true);
   const [feeRate, setFeeRate] = useState<number | string>(localState.feeRate);
   const [feeRateIndex, setFeeRateIndex] = useState(localState.feeRateIndex);
   const [toPayInfo, setToPayInfo] = useState<{
@@ -73,7 +75,7 @@ function TxCreatePage({ localState, updateState }) {
 
   const createBitcoinTxCallback = () => {
     setDisabled(true);
-    createBitcoinTx(toPayInfo, toSatoshis, Number(feeRate), autoAdjust)
+    createBitcoinTx(toPayInfo, toSatoshis, Number(feeRate), autoAdjust, isRbf)
       .then((data) => {
         setDisabled(false);
         updateState({
@@ -152,7 +154,14 @@ function TxCreatePage({ localState, updateState }) {
         </div>
 
         <div className="flex-col mt-lg">
-          <div className="text textDim">Fee</div>
+          <div className="flex-row justify-between">
+            <div className="text textDim">Fee</div>
+            <div>
+              <Checkbox checked={isRbf} onChange={(e) => setIsRbf(e.target.checked)}>
+                RBF
+              </Checkbox>
+            </div>
+          </div>
 
           <FeeRateBar
             optIndex={feeRateIndex}

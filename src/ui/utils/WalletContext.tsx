@@ -23,9 +23,9 @@ import {
 export interface WalletController {
   getTransactionByPsbt(psbt: string): unknown;
   signPsbt(psbt: any): unknown;
-  sendSpsat(arg0: { to: string; name: string; feeRate: number }): SpsatTransaction;
-  sendBrc20(arg0: { to: string; inscriptionIds: string[]; feeRate: number; tick: string }): Brc20Transaction;
-  pushInscribeTransferTx(oid: string, rawtx: string): InscribeTransferPushTxResult;
+  sendSpsat(arg0: { to: string; name: string; feeRate: number;isRbf: boolean }): SpsatTransaction;
+  sendBrc20(arg0: { to: string; inscriptionIds: string[]; feeRate: number; tick: string; isRbf: boolean }): Brc20Transaction;
+  pushInscribeTransferTx(oid: string, rawtx: string, isRbf: boolean): InscribeTransferPushTxResult;
   signTx(txHex: string, inputs: any): string;
 
   boot(password: string): Promise<void>;
@@ -93,9 +93,9 @@ export interface WalletController {
   getNextAlianName: (keyring: WalletKeyring) => Promise<string>;
 
   getCurrentKeyringAccounts(): Promise<Account[]>;
-  sendBTC(data: { to: string; amount: number; feeRate: number | string; autoAdjust: boolean }): Promise<BtcTransaction>;
+  sendBTC(data: { to: string; amount: number; feeRate: number | string; autoAdjust: boolean; isRbf: boolean }): Promise<BtcTransaction>;
 
-  sendInscription(data: { to: string; inscriptionId: string; feeRate: number }): Promise<InscriptionTransaction>;
+  sendInscription(data: { to: string; inscriptionId: string; feeRate: number;isRbf: boolean }): Promise<InscriptionTransaction>;
 
   sendInscriptions(data: {
     to: string;
@@ -129,7 +129,8 @@ export interface WalletController {
     address: string,
     tick: string,
     amount: string,
-    feeRate: number
+    feeRate: number,
+    isRbf: boolean
   ): Promise<InscriptionTransaction>;
 
   getHiddenMoney(): Promise<boolean>;
@@ -139,8 +140,8 @@ export interface WalletController {
   getSpSats(address: string): Promise<SpSatsData>;
   getExchangeRate(): Promise<ExchangeRate>;
   getTickInfo(ticker: string): Promise<any>;
-  transferAndSend(addr, to, tick, brc20_amount, feerate): Promise<any>;
-  transfer(addr: string, id: string, rtx: string): Promise<any>;
+  transferAndSend(addr, to, tick, brc20_amount, feerate, isRbf): Promise<any>;
+  transfer(addr: string, id: string, rtx: string, isRbf: boolean): Promise<any>;
   getVersionInfo(): Promise<any>;
   updateVersioInfoRead(): void;
 }

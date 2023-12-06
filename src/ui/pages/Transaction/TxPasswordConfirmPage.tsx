@@ -59,7 +59,7 @@ export default function TxPasswordConfirmPage({
       let rawTx: string = await wallet.signTx(rawTxInfo?.txHex || '', rawTxInfo?.inputs);
       log('send', rawTx);
       if (rawTxInfo?.next === 'transfer') {
-        const nextTransfer = await wallet.transfer(account.address, rawTxInfo?.id || '', rawTx);
+        const nextTransfer = await wallet.transfer(account.address, rawTxInfo?.id || '', rawTx, rawTxInfo.isRbf || false);
         log('transfer', nextTransfer);
         rawTx = await wallet.signTx(nextTransfer.rtx, nextTransfer.inputs);
         log('transfer', rawTx);

@@ -25,7 +25,7 @@ export function useCreateBitcoinTxCallback() {
   const wallet = useWallet();
   const fromAddress = useAccountAddress();
   return useCallback(
-    async (toAddressInfo: ToAddressInfo, toAmount: number | number, feeRate?: number, autoAdjust = false) => {
+    async (toAddressInfo: ToAddressInfo, toAmount: number | number, feeRate?: number, autoAdjust = false, isRbf=false) => {
       if (!feeRate) {
         const FeeRates = await wallet.getFeeRates();
         feeRate = FeeRates[1].feerate;
@@ -35,7 +35,8 @@ export function useCreateBitcoinTxCallback() {
           to: toAddressInfo.address,
           amount: toAmount,
           feeRate,
-          autoAdjust
+          autoAdjust,
+          isRbf: isRbf
         });
         const rawTxInfo: RawTxInfo = {
           txHex: btcTransactionInfo.rtx,
@@ -99,7 +100,7 @@ export function usePushInscribeTransferTxCallback() {
   const wallet = useWallet();
   const helper = useHelper();
   return useCallback(
-    async (oid: string, rawtx: string) => {
+    async (oid: string, rawtx: string, isRbf: boolean) => {
       const defaultPushTxResult: InscribeTransferPushTxResult = {
         txid: '',
         reveal: '',
@@ -114,7 +115,7 @@ export function usePushInscribeTransferTxCallback() {
       };
       try {
         helper.loading(true);
-        const pushTxResult = await wallet.pushInscribeTransferTx(oid, rawtx);
+        const pushTxResult = await wallet.pushInscribeTransferTx(oid, rawtx, isRbf);
         await sleep(3); // Wait for transaction synchronization
         helper.loading(false);
         dispatch(transactionsActions.updateBitcoinTx({ txid: pushTxResult.txid }));
@@ -148,11 +149,12 @@ export function useCreateOrdinalsTxCallback() {
   const wallet = useWallet();
   const fromAddress = useAccountAddress();
   return useCallback(
-    async (toAddressInfo: ToAddressInfo, inscriptionId: string, feeRate: number, outputValue: number) => {
+    async (toAddressInfo: ToAddressInfo, inscriptionId: string, feeRate: number, outputValue: number, isRbf: boolean) => {
       const oInscriptionTransaction = await wallet.sendInscription({
         to: toAddressInfo.address,
         inscriptionId,
-        feeRate
+        feeRate,
+        isRbf
       });
       const rawTxInfo: RawTxInfo = {
         txHex: oInscriptionTransaction.rtx,
@@ -179,11 +181,12 @@ export function useCreateSpsatsTxCallback() {
   const wallet = useWallet();
   const fromAddress = useAccountAddress();
   return useCallback(
-    async (toAddressInfo: ToAddressInfo, name: string, feeRate: number, outputValue: number) => {
+    async (toAddressInfo: ToAddressInfo, name: string, feeRate: number, outputValue: number, isRbf: boolean) => {
       const oSpsatTransaction = await wallet.sendSpsat({
         to: toAddressInfo.address,
         name,
-        feeRate
+        feeRate,
+        isRbf
       });
       const rawTxInfo: RawTxInfo = {
         txHex: oSpsatTransaction.rtx,
@@ -211,7 +214,7 @@ export function useCreateMultiBrc20TxCallback() {
   const wallet = useWallet();
   const fromAddress = useAccountAddress();
   return useCallback(
-    async (toAddressInfo: ToAddressInfo, inscriptionIds: string[], tick: string, feeRate?: number) => {
+    async (toAddressInfo: ToAddressInfo, inscriptionIds: string[], tick: string, feeRate: number, isRbf: boolean) => {
       if (!feeRate) {
         const feeRates = await wallet.getFeeRates();
         feeRate = feeRates[1].feerate;
@@ -220,7 +223,8 @@ export function useCreateMultiBrc20TxCallback() {
         to: toAddressInfo.address,
         inscriptionIds,
         feeRate,
-        tick
+        tick,
+        isRbf
       });
       const rawTxInfo: RawTxInfo = {
         txHex: oBrc20Transaction.rtx,
@@ -246,12 +250,12 @@ export function useCreateSendBrc20TxCallback() {
   const wallet = useWallet();
   const fromAddress = useAccountAddress();
   return useCallback(
-    async (toAddressInfo: ToAddressInfo, amount: string | number, tick: string, feeRate?: number) => {
+    async (toAddressInfo: ToAddressInfo, amount: string | number, tick: string, feeRate: number, isRbf: boolean) => {
       if (!feeRate) {
         const feeRates = await wallet.getFeeRates();
         feeRate = feeRates[1].feerate;
       }
-      const oResult = await wallet.transferAndSend(fromAddress, toAddressInfo.address, tick, amount, feeRate);
+      const oResult = await wallet.transferAndSend(fromAddress, toAddressInfo.address, tick, amount, feeRate, isRbf);
       if (oResult.code !== '0') {
         return oResult;
       }
@@ -274,7 +278,8 @@ export function useCreateSendBrc20TxCallback() {
         inputs: oBrc20Transaction.inputs,
         id: oBrc20Transaction.id,
         next: oBrc20Transaction.next,
-        serviceFee: oBrc20Transaction.service_fee
+        serviceFee: oBrc20Transaction.service_fee,
+        isRbf: isRbf
       };
       return rawTxInfo;
     },

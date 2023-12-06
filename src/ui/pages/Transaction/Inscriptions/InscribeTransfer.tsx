@@ -1,4 +1,4 @@
-import { Button } from 'antd';
+import { Button, Checkbox } from 'antd';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 
@@ -47,6 +47,7 @@ interface ContextData {
   amount?: number;
   rawTx?: string;
   pushTxResult: InscribeTransferPushTxResult;
+  isRbf: boolean;
 }
 
 interface UpdateContextDataParams {
@@ -59,6 +60,7 @@ interface UpdateContextDataParams {
   amount?: number;
   rawTx?: string;
   pushTxResult?: InscribeTransferPushTxResult;
+  isRbf?: boolean;
 }
 
 const defaultPushTxResult: InscribeTransferPushTxResult = {
@@ -76,7 +78,8 @@ export default function InscribeTransfer({ params: { data, session } }: Props) {
     amount: parseInt(data.amount),
     session,
     rawTx: '',
-    pushTxResult: defaultPushTxResult
+    pushTxResult: defaultPushTxResult,
+    isRbf: true
   });
   const updateContextData = useCallback(
     (params: UpdateContextDataParams) => {
@@ -84,7 +87,7 @@ export default function InscribeTransfer({ params: { data, session } }: Props) {
     },
     [contextData, setContextData]
   );
-
+console.log(contextData)
   if (contextData.step === Step.STEP1) {
     return <InscribeTransferStep contextData={contextData} updateContextData={updateContextData} />;
   } else if (contextData.step === Step.STEP2) {
@@ -102,7 +105,8 @@ export function InscribeTransferScreen() {
   const [contextData, setContextData] = useState<ContextData>({
     step: Step.STEP1,
     ticker: ticker,
-    pushTxResult: defaultPushTxResult
+    pushTxResult: defaultPushTxResult,
+    isRbf: true
   });
   const updateContextData = useCallback(
     (params: UpdateContextDataParams) => {
@@ -192,7 +196,13 @@ function InscribeTransferStep({ contextData, updateContextData }: StepProps) {
       setDisabled(true);
       helper.loading(true);
       const amount = parseInt(inputAmount);
-      const order = await wallet.inscribeBRC20Transfer(account.address, contextData.ticker, amount.toString(), feeRate);
+      const order = await wallet.inscribeBRC20Transfer(
+        account.address,
+        contextData.ticker,
+        amount.toString(),
+        feeRate,
+        contextData.isRbf
+      );
       updateContextData({
         order,
         amount,
@@ -266,7 +276,14 @@ function InscribeTransferStep({ contextData, updateContextData }: StepProps) {
             </div>
 
             <div className="flex-col">
-              <div className="text textDim">Fee</div>
+              <div className="flex-row justify-between">
+                <div className="text textDim">Fee</div>
+                <div>
+                  <Checkbox checked={contextData.isRbf} onChange={(e) => updateContextData({ isRbf: e.target.checked})}>
+                    RBF
+                  </Checkbox>
+                </div>
+              </div>
               <FeeRateBar
                 onChange={(val) => {
                   setFeeRate(val);
@@ -397,7 +414,7 @@ function InscribeSignStep({
       rawTxInfo={contextData.rawTxInfo}
       type={TxType.INSCRIBE_TRANSFER}
       callback={async (rawTx: string) => {
-        const pushTxResult = await pushInscribeTransferTx(contextData.order?.oid || '', rawTx);
+        const pushTxResult = await pushInscribeTransferTx(contextData.order?.oid || '', rawTx, contextData.isRbf);
         if (pushTxResult.error) {
           navigator('TxFailPage', { error: pushTxResult.error, type: TxType.INSCRIBE_TRANSFER });
           return;

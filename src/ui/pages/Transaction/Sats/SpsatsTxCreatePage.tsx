@@ -1,4 +1,4 @@
-import { Button } from 'antd';
+import { Button, Checkbox } from 'antd';
 import { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 
@@ -28,6 +28,7 @@ export default function SpsatsTxCreatePage() {
 
   const [feeRate, setFeeRate] = useState(5);
   const defaultOutputValue = spsatsInfo ? spsatsInfo.sats : 10000;
+  const [isRbf, setIsRbf] = useState(true);
 
   const [outputValue, setOutputValue] = useState(defaultOutputValue);
 
@@ -51,7 +52,7 @@ export default function SpsatsTxCreatePage() {
   }, [toInfo, feeRate, outputValue]);
   const createSpstasTxCallback = () => {
     setDisabled(true);
-    createSpsatsTx(toInfo, spsatsInfo.name, feeRate, outputValue)
+    createSpsatsTx(toInfo, spsatsInfo.name, feeRate, outputValue, isRbf)
       .then((data) => {
         navigate('SpsatsTxConfirmPage', { rawTxInfo: data });
         setDisabled(false);
@@ -96,7 +97,14 @@ export default function SpsatsTxCreatePage() {
             disabled
           />
 
-          <div className="text textDim">Fee</div>
+          <div className="flex-row justify-between">
+            <div className="text textDim">Fee</div>
+            <div>
+              <Checkbox checked={isRbf} onChange={(e) => setIsRbf(e.target.checked)}>
+                RBF
+              </Checkbox>
+            </div>
+          </div>
 
           <FeeRateBar
             onChange={(val) => {

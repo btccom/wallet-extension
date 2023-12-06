@@ -93,7 +93,8 @@ export default function Deposit({ params: { session, data } }: DepositProps) {
     const toAddressInfo = { address: data.toAddress, domain: session.origin };
     setDisabled(true);
     try {
-      const result = await CreateBitCoinTx(toAddressInfo, Number(data.amount), feeRate);
+      const isRbf = 'isRbf' in data ? !!data.isRbf : true;
+      const result = await CreateBitCoinTx(toAddressInfo, Number(data.amount), feeRate, false, isRbf);
       setRawTxInfo(result);
       setDisabled(false);
       setError('');

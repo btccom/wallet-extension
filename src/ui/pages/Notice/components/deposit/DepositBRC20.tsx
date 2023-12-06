@@ -170,7 +170,8 @@ export default function Deposit({ params: { session, data } }: DepositProps) {
     setDisabled(true);
     const toAddressInfo = { address: data.toAddress, domain: session.origin };
     try {
-      const result = await CreateSendBrc20Tx(toAddressInfo, data.amount, data.tick || '', feeRate);
+      const isRbf = 'isRbf' in data ? !!data.isRbf : true;
+      const result = await CreateSendBrc20Tx(toAddressInfo, data.amount, data.tick || '', feeRate, isRbf);
       if (result.code && result.code !== '0') {
         setErrorCode(String(result.code));
         throw new Error(result.message);

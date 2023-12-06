@@ -13,6 +13,7 @@ export interface DepositProps {
       amount: string;
       type: string;
       tick?: string;
+      isRbf?: boolean;
     };
   };
 }

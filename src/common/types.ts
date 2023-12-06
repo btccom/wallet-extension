@@ -177,6 +177,7 @@ export interface RawTxInfo {
   id?: string;
   next?: string;
   serviceFee?: string;
+  isRbf?: boolean;
 }
 
 export interface WalletConfig {

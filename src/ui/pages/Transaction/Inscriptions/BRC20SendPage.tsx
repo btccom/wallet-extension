@@ -1,4 +1,4 @@
-import { Button } from 'antd';
+import { Button, Checkbox } from 'antd';
 import { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 
@@ -21,6 +21,7 @@ export default function BRC20SendPage() {
   const wallet = useWallet();
   const [disabled, setDisabled] = useState(true);
   const [feeRate, setFeeRate] = useState<number>(0);
+  const [isRbf, setIsRbf] = useState(true);
   const [inputAmount, setInputAmount] = useState('');
   const [toPayInfo, setToPayInfo] = useState<{
     address: string;
@@ -58,7 +59,7 @@ export default function BRC20SendPage() {
   const sendBRC20TxCallback = async () => {
     setDisabled(true);
     try {
-      const tx = await SendBRC20Callback(toPayInfo, Number(inputAmount), tokenBalance.tick, feeRate);
+      const tx = await SendBRC20Callback(toPayInfo, Number(inputAmount), tokenBalance.tick, feeRate, isRbf);
       if (tx.code) {
         throw new Error(tx.message);
       }
@@ -137,7 +138,14 @@ export default function BRC20SendPage() {
         </div>
 
         <div className="flex-col mt-lg">
-          <div className="text textDim">Fee</div>
+          <div className="flex-row justify-between">
+            <div className="text textDim">Fee</div>
+            <div>
+              <Checkbox checked={isRbf} onChange={(e) => setIsRbf(e.target.checked)}>
+                RBF
+              </Checkbox>
+            </div>
+          </div>
           <FeeRateBar
             onChange={(val) => {
               setFeeRate(Number(val));

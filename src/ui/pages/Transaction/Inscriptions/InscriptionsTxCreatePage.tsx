@@ -1,4 +1,4 @@
-import { Button } from 'antd';
+import { Button, Checkbox } from 'antd';
 import { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 
@@ -29,6 +29,7 @@ export default function InscriptionsTxCreatePage() {
 
   const [feeRate, setFeeRate] = useState(5);
   const defaultOutputValue = inscription ? inscription.amount : 10000;
+  const [isRbf, setIsRbf] = useState(true);
 
   const minOutputValue = Math.max(inscription.offset, 546);
   const [outputValue, setOutputValue] = useState(defaultOutputValue);
@@ -67,7 +68,7 @@ export default function InscriptionsTxCreatePage() {
   }, [toInfo.address, feeRate, outputValue]);
   const createOrdinalsTxCallback = () => {
     setDisabled(true);
-    createOrdinalsTx(toInfo, inscription.id, feeRate, outputValue)
+    createOrdinalsTx(toInfo, inscription.id, feeRate, outputValue, isRbf)
       .then((data) => {
         navigate('SignHexPage', { rawTxInfo: data, type: TxType.SEND_INSCRIPTION });
         setDisabled(false);
@@ -105,7 +106,14 @@ export default function InscriptionsTxCreatePage() {
 
           <Input preset="text" value={String(defaultOutputValue)} disabled />
 
-          <div className="text textDim">Fee</div>
+          <div className="flex-row justify-between">
+            <div className="text textDim">Fee</div>
+            <div>
+              <Checkbox checked={isRbf} onChange={(e) => setIsRbf(e.target.checked)}>
+                RBF
+              </Checkbox>
+            </div>
+          </div>
 
           <FeeRateBar
             onChange={(val) => {
